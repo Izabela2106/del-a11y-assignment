@@ -40,22 +40,20 @@ const selectedChipClass = css({
 
 export function SessionFilters({ activeFilter, onFilterChange }: SessionFiltersProps) {
   return (
-    <Flex direction={{ base: 'column', md: 'row' }} gap="2">
+    <Flex role="group" aria-label="Filter sessions" direction={{ base: 'column', md: 'row' }} gap="2">
       {sessionFilters.map((filter, index) => {
         const isSelected = filter.id === activeFilter;
 
         return (
-          <div
+          <button
             key={filter.id}
+            type="button"
             className={cx(chipClass, isSelected && selectedChipClass)}
-            {...{
-              role: 'button',
-              tabIndex: index === 0 ? 0 : -1,
-              onClick: () => onFilterChange(filter.id),
-            }}
+            onClick={() => onFilterChange(filter.id)}
+            aria-pressed={isSelected}
           >
             {filter.label}
-          </div>
+          </button>
         );
       })}
     </Flex>

@@ -52,6 +52,8 @@ export function ScheduleList({ sessions }: ScheduleListProps) {
         m: '0',
         p: '0',
       })}
+      role="list"
+      aria-label="Schedule list"
     >
       {sessions.map((session) => {
         const isExpanded = expandedIds.has(session.id);
@@ -84,6 +86,7 @@ export function ScheduleList({ sessions }: ScheduleListProps) {
               className={detailsButtonClass}
               onClick={() => handleToggle(session.id)}
             >
+              <span className={css({ srOnly: true })}>{session.name}</span>
               {copy.details}
             </button>
             {isExpanded && (

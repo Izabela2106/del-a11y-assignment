@@ -6,7 +6,7 @@ import { type AthleteResult, copy, results } from '../data/fixtures';
 
 type SortColumn = 'rank' | 'bib';
 
-type SortDirection = 'asc' | 'desc';
+type SortDirection = 'ascending' | 'descending';
 
 interface ColumnDirections {
   rank: SortDirection;
@@ -68,7 +68,7 @@ const standingClass = {
 } as const;
 
 const flipDirection = (direction: SortDirection): SortDirection =>
-  direction === 'asc' ? 'desc' : 'asc';
+  direction === 'ascending' ? 'descending' : 'ascending';
 
 const sortResults = (
   rows: readonly AthleteResult[],
@@ -77,12 +77,12 @@ const sortResults = (
 ): AthleteResult[] =>
   rows.toSorted((left, right) => {
     const delta = left[column] - right[column];
-    return direction === 'asc' ? delta : -delta;
+    return direction === 'ascending' ? delta : -delta;
   });
 
 export function ResultsTable() {
   const [column, setColumn] = useState<SortColumn>('rank');
-  const [directions, setDirections] = useState<ColumnDirections>({ rank: 'asc', bib: 'asc' });
+  const [directions, setDirections] = useState<ColumnDirections>({ rank: 'ascending', bib: 'ascending' });
 
   const handleSort = (nextColumn: SortColumn) => {
     setDirections((current) => ({
@@ -95,13 +95,12 @@ export function ResultsTable() {
   const sortedRows = sortResults(results, column, directions[column]);
 
   return (
-    <Box>
-      <Box overflowX="auto">
+      <Box overflowX="auto" tabIndex={0} aria-label="Results table">
         <table className={tableClass}>
           <caption className={captionClass}>{copy.resultsCaption}</caption>
           <thead>
             <tr>
-              <th className={headerCellClass}>
+              <th className={headerCellClass} aria-sort={directions.rank}>
                 <button
                   type="button"
                   aria-label="Sort by rank"
@@ -111,17 +110,17 @@ export function ResultsTable() {
                   {copy.rank}
                 </button>
               </th>
-              <th className={headerCellClass}>
+              <th className={headerCellClass} aria-sort={directions.rank}>
                 <button
                   type="button"
-                  aria-label="Sort by rank"
+                  aria-label="Sort by bib"
                   className={sortButtonClass}
                   onClick={() => handleSort('bib')}
                 >
                   {copy.bib}
                 </button>
               </th>
-              <th className={headerCellClass} />
+              <th className={headerCellClass}>{copy.athlete}</th>
               <th className={headerCellClass}>{copy.noc}</th>
               <th className={headerCellClass}>{copy.status}</th>
             </tr>
@@ -134,22 +133,13 @@ export function ResultsTable() {
                 <td className={bodyCellClass}>{row.athlete}</td>
                 <td className={bodyCellClass}>{row.noc}</td>
                 <td className={cx(bodyCellClass, standingClass[row.standing])}>
-                  {copy.statusMark}
+                  {row.standing === 'Qualified' ? copy.qualified : copy.eliminated}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </Box>
-      <table className={css({ srOnly: true })}>
-        <caption>{copy.resultsCaption}</caption>
-        <tbody>
-          <tr>
-            <td>{copy.statusMark}</td>
-          </tr>
-        </tbody>
-      </table>
-    </Box>
   );
 }
 

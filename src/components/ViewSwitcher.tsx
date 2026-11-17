@@ -1,7 +1,7 @@
 import { css } from 'styled-system/css';
-import type { MouseEvent } from 'react';
+import { type KeyboardEvent, useRef } from 'react';
 
-import { type ViewId, type ViewOption, views } from '../data/fixtures';
+import { viewPanelId, viewTabId, type ViewId, type ViewOption, views } from '../data/fixtures';
 
 export interface ViewSwitcherProps {
   activeView: ViewId;
@@ -33,9 +33,42 @@ const tabClass = css({
 });
 
 export function ViewSwitcher({ activeView, onViewChange }: ViewSwitcherProps) {
-  const handleSelect = (event: MouseEvent<HTMLAnchorElement>, view: ViewId) => {
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const selectTab = (index: number) => {
+    const view = views[index];
+    if (!view) {
+      return;
+    }
+
+    onViewChange(view.id);
+    tabRefs.current[index]?.focus();
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = views.findIndex((view) => view.id === activeView);
+    if (currentIndex < 0) {
+      return;
+    }
+
+    const lastIndex = views.length - 1;
+    let nextIndex: number | null = null;
+
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+        break;
+      default:
+        return;
+    }
+
     event.preventDefault();
-    onViewChange(view);
+    selectTab(nextIndex);
   };
 
   return (
@@ -50,19 +83,30 @@ export function ViewSwitcher({ activeView, onViewChange }: ViewSwitcherProps) {
         flexDirection: { base: 'column', md: 'row' },
         gap: '2',
       })}
+      onKeyDown={handleKeyDown}
     >
-      {views.map((view: ViewOption) => (
-        <a
-          key={view.id}
-          href={view.href}
-          role="tab"
-          aria-selected={view.id === activeView}
-          className={tabClass}
-          onClick={(event) => handleSelect(event, view.id)}
-        >
-          {view.label}
-        </a>
-      ))}
+      {views.map((view: ViewOption, index) => {
+        const selected = view.id === activeView;
+
+        return (
+          <button
+            key={view.id}
+            ref={(node) => {
+              tabRefs.current[index] = node;
+            }}
+            id={viewTabId(view.id)}
+            role="tab"
+            type="button"
+            aria-selected={selected}
+            aria-controls={viewPanelId(view.id)}
+            className={tabClass}
+            tabIndex={selected ? 0 : -1}
+            onClick={() => onViewChange(view.id)}
+          >
+            {view.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
