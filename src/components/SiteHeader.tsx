@@ -2,7 +2,6 @@ import { css } from 'styled-system/css';
 import { Flex, Stack } from 'styled-system/jsx';
 import { useState } from 'react';
 
-import alpineSkiing from '../assets/alpine-skiing.svg';
 import { copy } from '../data/fixtures';
 
 const focusRing = {
@@ -63,16 +62,24 @@ export function SiteHeader({ onManageAlerts }: SiteHeaderProps) {
         gap="4"
       >
         <Stack gap="3">
-          <img
-            src={alpineSkiing}
-            alt=""
+          <div
             className={css({
+              bg: '#063a5a',
               borderRadius: 'lg',
-              h: 'auto',
+              color: '#ffffff',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1',
+              justifyContent: 'center',
               maxW: '20rem',
+              px: '4',
+              py: '4',
               w: 'full',
             })}
-          />
+          >
+            <p className={css({ textStyle: 'h_large' })}>{copy.courseName}</p>
+            <p className={css({ textStyle: 't_small' })}>{copy.courseFacts}</p>
+          </div>
           <h1 className={css({ color: 'text.primary', textStyle: 'h_large' })}>{copy.heading}</h1>
           <p className={css({ color: 'text.primary', textStyle: 't_medium' })}>{copy.event}</p>
           <p className={css({ color: 'text.secondary', textStyle: 't_small' })}>{copy.date}</p>
@@ -81,6 +88,8 @@ export function SiteHeader({ onManageAlerts }: SiteHeaderProps) {
           <Flex gap="2" wrap="wrap">
             <button
               type="button"
+              aria-label="Add to favorites"
+              aria-pressed={isStarFilled}
               className={iconButtonClass}
               onClick={() => setIsStarFilled((current) => !current)}
             >
@@ -96,7 +105,7 @@ export function SiteHeader({ onManageAlerts }: SiteHeaderProps) {
             </button>
             <button
               type="button"
-              aria-label="Menu"
+              aria-label="Copy link"
               className={iconButtonClass}
               onClick={() => setHasCopiedLink(true)}
             >

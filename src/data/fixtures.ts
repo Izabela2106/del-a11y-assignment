@@ -1,5 +1,9 @@
 export type ViewId = 'schedule' | 'results' | 'medals';
 
+export const viewTabId = (id: ViewId): string => `${id}-tab`;
+
+export const viewPanelId = (id: ViewId): string => `${id}-panel`;
+
 export type SessionFilterId = 'live' | 'all' | 'finished';
 
 export type SessionStatus = 'Live' | 'Finished' | 'Upcoming';
@@ -36,6 +40,8 @@ export interface AthleteResult {
 export const copy = {
   heading: 'Championship Day',
   event: "Alpine skiing — women's slalom",
+  courseName: 'Alpine skiing',
+  courseFacts: 'Course: 58 gates, 180 m vertical drop',
   date: '12 February',
   manageAlerts: 'Manage alerts',
   linkCopied: 'Link copied',
@@ -51,6 +57,9 @@ export const copy = {
   noc: 'NOC',
   status: 'Status',
   statusMark: '—',
+  qualified: 'Qualified',
+  eliminated: 'Eliminated',
+  athlete: 'Athlete',
 } as const;
 
 export const views: readonly ViewOption[] = [

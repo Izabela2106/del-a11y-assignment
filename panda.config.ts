@@ -9,7 +9,7 @@ import { defineConfig, defineSemanticTokens, defineTextStyles } from '@pandacss/
 
 const inter = 'Inter, ui-sans-serif, system-ui, sans-serif';
 
-const sv = (light: string, dark: string) => ({ value: { _light: light, _dark: dark } });
+const sv = (light: string, dark: string) => ({ value: { base: light, _dark: dark } });
 
 const colors = defineSemanticTokens.colors({
   surface: {
@@ -21,8 +21,9 @@ const colors = defineSemanticTokens.colors({
     scrim: sv('rgba(22, 25, 35, 0.6)', 'rgba(22, 25, 35, 0.6)'),
   },
   border: {
-    primary: sv('#d7d9de', '#5f6573'),
-    secondary: sv('rgba(215, 217, 225, 0.4)', 'rgba(183, 185, 198, 0.4)'),
+    // 19.Fixing issue with contrast
+    primary: sv('#7a8091', '#5f6573'),
+    secondary: sv('#7a8091', 'rgba(183, 185, 198, 0.4)'),
     brand: sv('#5329ff', '#6e49ff'),
     selected: sv('#5329ff', '#6e49ff'),
   },

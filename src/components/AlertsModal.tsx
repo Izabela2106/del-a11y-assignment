@@ -1,10 +1,11 @@
 import { css } from 'styled-system/css';
 import { Stack } from 'styled-system/jsx';
-import { type KeyboardEvent, useEffect, useRef } from 'react';
+import { type SyntheticEvent, useEffect, useId, useRef } from 'react';
 
 import { copy } from '../data/fixtures';
 
 export interface AlertsModalProps {
+  open: boolean;
   onClose: () => void;
 }
 
@@ -50,21 +51,35 @@ const labelClass = css({
   textStyle: 't_medium',
 });
 
-export function AlertsModal({ onClose }: AlertsModalProps) {
+export function AlertsModal({ open, onClose }: AlertsModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const heatChangesRef = useRef<HTMLInputElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
-    heatChangesRef.current?.focus();
-  }, []);
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape') {
-      onClose();
+    const dialog = dialogRef.current;
+    if (dialog === null) {
+      return;
     }
+
+    if (open) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+      heatChangesRef.current?.focus();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
+
+  const handleCancel = (event: SyntheticEvent<HTMLDialogElement>) => {
+    event.preventDefault();
+    onClose();
   };
 
   return (
     <div
+      hidden={!open}
       className={css({
         alignItems: 'center',
         bg: 'surface.scrim',
@@ -76,9 +91,10 @@ export function AlertsModal({ onClose }: AlertsModalProps) {
         zIndex: '10',
       })}
     >
-      <div
-        role="dialog"
-        onKeyDown={handleKeyDown}
+      <dialog
+        ref={dialogRef}
+        aria-labelledby={titleId}
+        onCancel={handleCancel}
         className={css({
           bg: 'surface.elevated',
           borderColor: 'border.secondary',
@@ -86,13 +102,14 @@ export function AlertsModal({ onClose }: AlertsModalProps) {
           borderStyle: 'solid',
           borderWidth: 'xs',
           color: 'text.primary',
+          m: 'auto',
           maxW: '24rem',
           p: '6',
           w: 'full',
         })}
       >
         <Stack gap="4">
-          <h2 className={css({ color: 'text.primary', textStyle: 'h_small' })}>
+          <h2 id={titleId} className={css({ color: 'text.primary', textStyle: 'h_small' })}>
             {copy.alertTitle}
           </h2>
           <Stack gap="3">
@@ -109,7 +126,7 @@ export function AlertsModal({ onClose }: AlertsModalProps) {
             {copy.close}
           </button>
         </Stack>
-      </div>
+      </dialog>
     </div>
   );
 }

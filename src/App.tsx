@@ -8,7 +8,15 @@ import { ScheduleList } from './components/ScheduleList';
 import { SessionFilters } from './components/SessionFilters';
 import { SiteHeader } from './components/SiteHeader';
 import { ViewSwitcher } from './components/ViewSwitcher';
-import { copy, filterSessions, type SessionFilterId, sessions, type ViewId } from './data/fixtures';
+import {
+  copy,
+  filterSessions,
+  type SessionFilterId,
+  sessions,
+  type ViewId,
+  viewPanelId,
+  viewTabId,
+} from './data/fixtures';
 
 export function App() {
   const [activeView, setActiveView] = useState<ViewId>('schedule');
@@ -34,24 +42,39 @@ export function App() {
     >
       <Stack gap="6">
         <SiteHeader onManageAlerts={() => setIsAlertsOpen(true)} />
-        {isAlertsOpen && <AlertsModal onClose={handleCloseAlerts} />}
+        <AlertsModal open={isAlertsOpen} onClose={handleCloseAlerts} />
         <ViewSwitcher activeView={activeView} onViewChange={setActiveView} />
-        {activeView === 'schedule' && (
-          <section className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}>
-            <SessionFilters activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-            <ScheduleList sessions={visibleSessions} />
-          </section>
-        )}
-        {activeView === 'results' && (
-          <section>
-            <ResultsTable />
-          </section>
-        )}
-        {activeView === 'medals' && (
-          <section>
+        <section
+          id={viewPanelId('schedule')}
+          role="tabpanel"
+          aria-labelledby={viewTabId('schedule')}
+          hidden={activeView !== 'schedule'}
+        >
+          {activeView === 'schedule' && (
+            <div className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}>
+              <SessionFilters activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+              <ScheduleList sessions={visibleSessions} />
+            </div>
+          )}
+        </section>
+        <section
+          id={viewPanelId('results')}
+          role="tabpanel"
+          aria-labelledby={viewTabId('results')}
+          hidden={activeView !== 'results'}
+        >
+          {activeView === 'results' && <ResultsTable />}
+        </section>
+        <section
+          id={viewPanelId('medals')}
+          role="tabpanel"
+          aria-labelledby={viewTabId('medals')}
+          hidden={activeView !== 'medals'}
+        >
+          {activeView === 'medals' && (
             <p className={css({ color: 'text.primary', textStyle: 't_medium' })}>{copy.medals}</p>
-          </section>
-        )}
+          )}
+        </section>
       </Stack>
     </main>
   );
